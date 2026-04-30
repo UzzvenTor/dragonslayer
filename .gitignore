@@ -6,3 +6,7 @@ out/*.txt
 .venv/
 .DS_Store
 .env
+
+# Goliath
+goliath_daily/reports/run_*.log
+goliath_daily/reports/*.json

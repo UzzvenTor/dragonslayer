@@ -1,0 +1,69 @@
+name: Goliath Daily Report
+
+on:
+  schedule:
+    # 5:03 UTC = 8:03 МСК. GitHub cron может опаздывать на 5-15 мин под нагрузкой — норм.
+    - cron: '3 5 * * *'
+  workflow_dispatch:  # ручной запуск из UI Actions
+
+permissions:
+  contents: write  # коммитим отчёт обратно в репо
+
+concurrency:
+  group: goliath-daily
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'goliath_daily/requirements.txt'
+
+      - name: Install deps
+        run: pip install -r goliath_daily/requirements.txt
+        working-directory: ${{ github.workspace }}
+
+      - name: Generate report
+        env:
+          # Telegram
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          # Я.Директ
+          YANDEX_DIRECT_TOKEN: ${{ secrets.YANDEX_DIRECT_TOKEN }}
+          YD_CABINET: porg-6vgf2ozq
+          YD_CAMPAIGN_IDS: 709513073,709513492,709513513,709513517
+          # Метрика
+          YANDEX_METRIKA_TOKEN: ${{ secrets.YANDEX_METRIKA_TOKEN }}
+          METRIKA_COUNTER_ID: '72085663'
+          GOAL_REG_ID: '332807191'
+          # Claude через OpenRouter
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          INSIGHT_MODEL: anthropic/claude-sonnet-4-6
+          # MySQL Зерокодера (получает зрителей и продажи)
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: '3306'
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: zerocoder_vps
+        run: python daily_report.py
+        working-directory: goliath_daily
+
+      - name: Commit report back to repo
+        run: |
+          git config user.name "Goliath Bot"
+          git config user.email "goliath@kurzemnek.ru"
+          git add goliath_daily/reports/*.md goliath_daily/reports/*.json 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No new report to commit"
+          else
+            git commit -m "report: $(date -u +%Y-%m-%d) [skip ci]"
+            git push
+          fi
+        working-directory: ${{ github.workspace }}
