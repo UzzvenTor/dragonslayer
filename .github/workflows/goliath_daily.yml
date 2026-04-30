@@ -67,3 +67,20 @@ jobs:
             git push
           fi
         working-directory: ${{ github.workspace }}
+
+      # Если любой шаг выше упал — пишем коротко в ТГ, чтобы Валерий узнал без захода в GitHub
+      - name: Notify failure → Telegram
+        if: failure()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          MSG=$(printf '⚠️ <b>Голиаф упал</b>\n\nrun: <a href="%s">%s</a>\nworkflow: %s\nbranch: %s\nactor: %s\n\nЛоги в Actions — открой репо.' \
+            "$RUN_URL" "${{ github.run_number }}" "${{ github.workflow }}" "${{ github.ref_name }}" "${{ github.actor }}")
+          curl -sS -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TG_CHAT_ID}" \
+            --data-urlencode "parse_mode=HTML" \
+            --data-urlencode "disable_web_page_preview=true" \
+            --data-urlencode "text=${MSG}" \
+            >/dev/null
