@@ -39,18 +39,9 @@ tags: [daily, goliath, yandex-direct]
 # 📊 Daily report Голиафа — {date}
 
 > Автоматически сгенерировано {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')} МСК. Источники: Я.Директ Reports API (porg-6vgf2ozq), Метрика (счётчик 72085663), getcourse БД (zerocoder_vps).
-
-## Краткий отчёт
+> Raw-метрики (для скриптов/анализа) — рядом в `{date}.json`.
 
 {md}
-
----
-
-## Сырые метрики (для аудита)
-
-```json
-{json.dumps(raw_metrics, ensure_ascii=False, indent=2)}
-```
 """
     with open(path, 'w', encoding='utf-8') as f:
         f.write(body)

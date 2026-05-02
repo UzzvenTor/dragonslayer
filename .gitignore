@@ -9,4 +9,3 @@ out/*.txt
 
 # Goliath
 goliath_daily/reports/run_*.log
-goliath_daily/reports/*.json
