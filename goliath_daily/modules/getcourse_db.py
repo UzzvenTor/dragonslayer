@@ -19,40 +19,30 @@ except ImportError:
     get_conn = None
 
 
-def fetch_viewers(yday: str) -> list[dict]:
-    """Уникальные зрители вебинаров (bizonViewers) от трафика Голиафа за yday.
-    Группировка по utm_campaign + utm_medium. Ключ = email.
-    """
+def _viewers_query(date_from: str, date_to: str) -> list[dict]:
     if get_conn is None:
         return [{'_error':'shared_local недоступен — поставь dragonslayer/shared_local рядом'}]
     conn = get_conn()
     try:
         cur = conn.cursor()
         cur.execute("""
-            SELECT utm_campaign(255) AS utm_campaign,
-                   utm_medium(255) AS utm_medium,
-                   COUNT(DISTINCT email(255)) AS viewers
+            SELECT SUBSTRING(utm_campaign,1,255) AS utm_campaign,
+                   SUBSTRING(utm_medium,1,255) AS utm_medium,
+                   COUNT(DISTINCT SUBSTRING(email,1,255)) AS viewers
             FROM bizonViewers
-            WHERE DATE(webinar_date) = %s
-              AND utm_source(50) = 'yandex'
+            WHERE DATE(webinar_date) BETWEEN %s AND %s
+              AND SUBSTRING(utm_source,1,50) = 'yandex'
               AND utm_medium LIKE 'goliath__%%'
-            GROUP BY utm_campaign(255), utm_medium(255)
+            GROUP BY SUBSTRING(utm_campaign,1,255), SUBSTRING(utm_medium,1,255)
             ORDER BY viewers DESC
-        """.replace('utm_campaign(255)','SUBSTRING(utm_campaign,1,255)')
-           .replace('utm_medium(255)','SUBSTRING(utm_medium,1,255)')
-           .replace('utm_source(50)','SUBSTRING(utm_source,1,50)')
-           .replace('email(255)','SUBSTRING(email,1,255)'),
-           [yday])
+        """, [date_from, date_to])
         return [dict(r) for r in cur.fetchall()]
     finally:
         try: conn.close()
         except: pass
 
 
-def fetch_payments(yday: str) -> list[dict]:
-    """Продажи (getcoursePayments status='Получен') атрибуцированные на трафик Голиафа за yday.
-    Связка: getcoursePayments.email → getcourseUsers.email → getcourseUsers.gcuid → main_yandex.uid → utm.
-    """
+def _payments_query(date_from: str, date_to: str) -> list[dict]:
     if get_conn is None:
         return [{'_error':'shared_local недоступен'}]
     conn = get_conn()
@@ -67,17 +57,33 @@ def fetch_payments(yday: str) -> list[dict]:
             FROM getcoursePayments p
             JOIN getcourseUsers u ON p.email = u.email
             JOIN main_yandex m ON u.gcuid = m.uid
-            WHERE DATE(p.date_created) = %s
+            WHERE DATE(p.date_created) BETWEEN %s AND %s
               AND p.status = 'Получен'
               AND SUBSTRING(m.utm_source,1,50) = 'yandex'
               AND m.utm_medium LIKE 'goliath__%%'
             GROUP BY SUBSTRING(m.utm_campaign,1,255), SUBSTRING(m.utm_medium,1,255)
             ORDER BY revenue DESC
-        """, [yday])
+        """, [date_from, date_to])
         return [dict(r) for r in cur.fetchall()]
     finally:
         try: conn.close()
         except: pass
+
+
+def fetch_viewers(yday: str) -> list[dict]:
+    return _viewers_query(yday, yday)
+
+
+def fetch_payments(yday: str) -> list[dict]:
+    return _payments_query(yday, yday)
+
+
+def fetch_viewers_period(date_from: str, date_to: str) -> list[dict]:
+    return _viewers_query(date_from, date_to)
+
+
+def fetch_payments_period(date_from: str, date_to: str) -> list[dict]:
+    return _payments_query(date_from, date_to)
 
 
 if __name__ == '__main__':
@@ -86,5 +92,8 @@ if __name__ == '__main__':
     from dotenv import load_dotenv
     load_dotenv(os.path.join(os.path.dirname(__file__),'..','.env'))
     yday = (datetime.date.today()-datetime.timedelta(days=1)).isoformat()
-    print('Viewers:', json.dumps(fetch_viewers(yday), ensure_ascii=False, indent=2))
-    print('Payments:', json.dumps(fetch_payments(yday), ensure_ascii=False, indent=2))
+    mtd_from = yday[:8] + '01'
+    print('Viewers yday:', json.dumps(fetch_viewers(yday), ensure_ascii=False, indent=2))
+    print('Viewers MTD:', json.dumps(fetch_viewers_period(mtd_from, yday), ensure_ascii=False, indent=2))
+    print('Payments yday:', json.dumps(fetch_payments(yday), ensure_ascii=False, indent=2))
+    print('Payments MTD:', json.dumps(fetch_payments_period(mtd_from, yday), ensure_ascii=False, indent=2))

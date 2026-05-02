@@ -2,8 +2,9 @@ name: Goliath Daily Report
 
 on:
   schedule:
-    # 5:03 UTC = 8:03 МСК. GitHub cron может опаздывать на 5-15 мин под нагрузкой — норм.
-    - cron: '3 5 * * *'
+    # 4:00 UTC = 7:00 МСК. GH Actions cron под нагрузкой опаздывает до 60 мин,
+    # этот сдвиг даёт час буфера, чтобы отчёт реально был у Валерия к 8:00 МСК.
+    - cron: '0 4 * * *'
   workflow_dispatch:  # ручной запуск из UI Actions
 
 permissions:
