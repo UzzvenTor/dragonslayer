@@ -1,4 +1,9 @@
-"""Я.Директ Reports API — асинхронный отчёт за вчера по 4 кампаниям Голиафа."""
+"""Я.Директ Reports API — отчёт по 4 кампаниям Голиафа за день или период.
+
+Конверсии считаются строго по одной цели — `[all] Уникальная регистрация`
+(env GOAL_REG_ID). Без фильтра Я.Директ возвращает сумму по всем целям счётчика,
+поэтому цифры расходятся с Метрикой и нашим KPI.
+"""
 import os, json, time, csv, io, urllib.request, urllib.error, socket
 
 orig=socket.getaddrinfo
@@ -6,21 +11,25 @@ def _v4(*a,**k): return [r for r in orig(*a,**k) if r[0]==socket.AF_INET]
 socket.getaddrinfo=_v4
 
 
-def fetch_daily(yday: str) -> list[dict]:
-    """Возвращает список dict: campaign_id, campaign_name, cost(₽), impressions, clicks, ctr, conversions, avg_cpc, cpa."""
+def _fetch_report(date_from: str, date_to: str) -> list[dict]:
+    """Собрать CAMPAIGN_PERFORMANCE_REPORT по 4 кампаниям Голиафа за период.
+    Конверсии — только по цели GOAL_REG_ID.
+    """
     tok = os.environ['YANDEX_DIRECT_TOKEN'].strip().strip("'").strip('"')
     cabinet = os.environ['YD_CABINET']
     camp_ids = [int(x) for x in os.environ['YD_CAMPAIGN_IDS'].split(',')]
+    goal_id = int(os.environ['GOAL_REG_ID'])
 
     body = {
         'params': {
             'SelectionCriteria': {
-                'DateFrom': yday,
-                'DateTo': yday,
-                'Filter': [{'Field':'CampaignId','Operator':'IN','Values':[str(c) for c in camp_ids]}]
+                'DateFrom': date_from,
+                'DateTo': date_to,
+                'Filter': [{'Field':'CampaignId','Operator':'IN','Values':[str(c) for c in camp_ids]}],
             },
-            'FieldNames': ['Date','CampaignId','CampaignName','Impressions','Clicks','Cost','Conversions'],
-            'ReportName': f'goliath_daily_{yday}_{int(time.time())}',
+            'Goals': [goal_id],
+            'FieldNames': ['CampaignId','CampaignName','Impressions','Clicks','Cost','Conversions'],
+            'ReportName': f'goliath_{date_from}_{date_to}_{int(time.time())}',
             'ReportType': 'CAMPAIGN_PERFORMANCE_REPORT',
             'DateRangeType': 'CUSTOM_DATE',
             'Format': 'TSV',
@@ -46,7 +55,7 @@ def fetch_daily(yday: str) -> list[dict]:
         headers=headers,
     )
 
-    # processingMode=auto — Я.Директ держит коннект до готовности (или возвращает 201/202)
+    content = None
     for attempt in range(40):
         try:
             with urllib.request.urlopen(req, timeout=120) as r:
@@ -54,17 +63,15 @@ def fetch_daily(yday: str) -> list[dict]:
                 content = r.read().decode('utf-8')
                 if code == 200:
                     break
-                # 201/202 — отчёт ещё формируется, ретраим
                 time.sleep(8)
         except urllib.error.HTTPError as e:
             if e.code in (201, 202):
                 time.sleep(8)
                 continue
             raise RuntimeError(f'YD reports HTTP {e.code}: {e.read().decode()[:500]}')
-    else:
+    if content is None:
         raise RuntimeError('YD reports не дождался Status=Done')
 
-    # TSV parse
     rows = []
     reader = csv.DictReader(io.StringIO(content), delimiter='\t')
     for row in reader:
@@ -84,6 +91,14 @@ def fetch_daily(yday: str) -> list[dict]:
             'cpa_rub': round(cost/conv, 2) if conv else 0,
         })
     return rows
+
+
+def fetch_daily(yday: str) -> list[dict]:
+    return _fetch_report(yday, yday)
+
+
+def fetch_period(date_from: str, date_to: str) -> list[dict]:
+    return _fetch_report(date_from, date_to)
 
 
 def fetch_campaign_states() -> dict[int,dict]:
@@ -126,7 +141,10 @@ if __name__ == '__main__':
     load_dotenv(os.path.join(os.path.dirname(__file__),'..','.env'))
 
     yday = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
+    mtd_from = yday[:8] + '01'
     print(f"=== Состояния кампаний ===")
     print(json.dumps(fetch_campaign_states(), ensure_ascii=False, indent=2))
-    print(f"\n=== Метрики за {yday} ===")
+    print(f"\n=== Метрики за {yday} (по цели УР) ===")
     print(json.dumps(fetch_daily(yday), ensure_ascii=False, indent=2))
+    print(f"\n=== Метрики MTD {mtd_from}..{yday} ===")
+    print(json.dumps(fetch_period(mtd_from, yday), ensure_ascii=False, indent=2))
