@@ -1,0 +1,579 @@
+{
+  "date": "2026-05-02",
+  "mtd_from": "2026-05-01",
+  "mtd_to": "2026-05-02",
+  "states": {
+    "709513073": {
+      "name": "goliath__start-your-business-with-ai",
+      "state": "ON",
+      "status": "ACCEPTED",
+      "payment": "ALLOWED"
+    },
+    "709513492": {
+      "name": "goliath__openclaw",
+      "state": "ON",
+      "status": "ACCEPTED",
+      "payment": "ALLOWED"
+    },
+    "709513513": {
+      "name": "goliath__n8n-visual-automation",
+      "state": "ON",
+      "status": "ACCEPTED",
+      "payment": "ALLOWED"
+    },
+    "709513517": {
+      "name": "goliath__law-tasks",
+      "state": "ON",
+      "status": "ACCEPTED",
+      "payment": "ALLOWED"
+    }
+  },
+  "yandex_direct_yday": [
+    {
+      "campaign_id": 709513073,
+      "campaign_name": "goliath__start-your-business-with-ai",
+      "cost_rub": 1917.99,
+      "impressions": 5862,
+      "clicks": 60,
+      "ctr_pct": 1.02,
+      "conversions": 0,
+      "cpc_rub": 31.97,
+      "cpa_rub": 0
+    },
+    {
+      "campaign_id": 709513492,
+      "campaign_name": "goliath__openclaw",
+      "cost_rub": 1679.5,
+      "impressions": 6370,
+      "clicks": 65,
+      "ctr_pct": 1.02,
+      "conversions": 0,
+      "cpc_rub": 25.84,
+      "cpa_rub": 0
+    },
+    {
+      "campaign_id": 709513513,
+      "campaign_name": "goliath__n8n-visual-automation",
+      "cost_rub": 2374.43,
+      "impressions": 4982,
+      "clicks": 77,
+      "ctr_pct": 1.55,
+      "conversions": 0,
+      "cpc_rub": 30.84,
+      "cpa_rub": 0
+    },
+    {
+      "campaign_id": 709513517,
+      "campaign_name": "goliath__law-tasks",
+      "cost_rub": 1438.72,
+      "impressions": 5715,
+      "clicks": 28,
+      "ctr_pct": 0.49,
+      "conversions": 0,
+      "cpc_rub": 51.38,
+      "cpa_rub": 0
+    }
+  ],
+  "yandex_direct_mtd": [
+    {
+      "campaign_id": 709513073,
+      "campaign_name": "goliath__start-your-business-with-ai",
+      "cost_rub": 3420.92,
+      "impressions": 9440,
+      "clicks": 97,
+      "ctr_pct": 1.03,
+      "conversions": 0,
+      "cpc_rub": 35.27,
+      "cpa_rub": 0
+    },
+    {
+      "campaign_id": 709513492,
+      "campaign_name": "goliath__openclaw",
+      "cost_rub": 3236.56,
+      "impressions": 11631,
+      "clicks": 114,
+      "ctr_pct": 0.98,
+      "conversions": 0,
+      "cpc_rub": 28.39,
+      "cpa_rub": 0
+    },
+    {
+      "campaign_id": 709513513,
+      "campaign_name": "goliath__n8n-visual-automation",
+      "cost_rub": 3746.41,
+      "impressions": 10936,
+      "clicks": 127,
+      "ctr_pct": 1.16,
+      "conversions": 0,
+      "cpc_rub": 29.5,
+      "cpa_rub": 0
+    },
+    {
+      "campaign_id": 709513517,
+      "campaign_name": "goliath__law-tasks",
+      "cost_rub": 2618.65,
+      "impressions": 12891,
+      "clicks": 53,
+      "ctr_pct": 0.41,
+      "conversions": 0,
+      "cpc_rub": 49.41,
+      "cpa_rub": 0
+    }
+  ],
+  "metrika_per_campaign_yday": [
+    {
+      "utm_campaign": "709513073",
+      "utm_medium": "goliath__keys",
+      "unique_leads": 1,
+      "visits": 43,
+      "goal_reaches": 1
+    },
+    {
+      "utm_campaign": "709513492",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 1,
+      "visits": 75,
+      "goal_reaches": 1
+    },
+    {
+      "utm_campaign": "709513513",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 1,
+      "visits": 57,
+      "goal_reaches": 1
+    },
+    {
+      "utm_campaign": "709513513",
+      "utm_medium": "goliath__keys",
+      "unique_leads": 1,
+      "visits": 14,
+      "goal_reaches": 1
+    },
+    {
+      "utm_campaign": "709513517",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 1,
+      "visits": 16,
+      "goal_reaches": 1
+    },
+    {
+      "utm_campaign": "709513517",
+      "utm_medium": "goliath__interests",
+      "unique_leads": 1,
+      "visits": 11,
+      "goal_reaches": 1
+    },
+    {
+      "utm_campaign": "709513073",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 0,
+      "visits": 8,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "709513073",
+      "utm_medium": "goliath__interests",
+      "unique_leads": 0,
+      "visits": 6,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "709513492",
+      "utm_medium": "goliath__keys",
+      "unique_leads": 0,
+      "visits": 1,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "709513513",
+      "utm_medium": "goliath__interests",
+      "unique_leads": 0,
+      "visits": 3,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "709513517",
+      "utm_medium": "goliath__keys",
+      "unique_leads": 0,
+      "visits": 4,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-14",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 0,
+      "visits": 1,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-9",
+      "utm_medium": "goliath__interests",
+      "unique_leads": 0,
+      "visits": 1,
+      "goal_reaches": 0
+    }
+  ],
+  "metrika_totals_yday": {
+    "visits": 240,
+    "users": 212,
+    "unique_leads": 6
+  },
+  "metrika_per_campaign_mtd": [
+    {
+      "utm_campaign": "709513492",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 2,
+      "visits": 108,
+      "goal_reaches": 2
+    },
+    {
+      "utm_campaign": "709513513",
+      "utm_medium": "goliath__keys",
+      "unique_leads": 2,
+      "visits": 28,
+      "goal_reaches": 2
+    },
+    {
+      "utm_campaign": "709513517",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 2,
+      "visits": 25,
+      "goal_reaches": 2
+    },
+    {
+      "utm_campaign": "709513517",
+      "utm_medium": "goliath__interests",
+      "unique_leads": 2,
+      "visits": 24,
+      "goal_reaches": 2
+    },
+    {
+      "utm_campaign": "709513073",
+      "utm_medium": "goliath__keys",
+      "unique_leads": 1,
+      "visits": 59,
+      "goal_reaches": 1
+    },
+    {
+      "utm_campaign": "709513492",
+      "utm_medium": "goliath__keys",
+      "unique_leads": 1,
+      "visits": 18,
+      "goal_reaches": 1
+    },
+    {
+      "utm_campaign": "709513513",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 1,
+      "visits": 68,
+      "goal_reaches": 1
+    },
+    {
+      "utm_campaign": "709513073",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 0,
+      "visits": 19,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "709513073",
+      "utm_medium": "goliath__interests",
+      "unique_leads": 0,
+      "visits": 18,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "709513492",
+      "utm_medium": "goliath__interests",
+      "unique_leads": 0,
+      "visits": 7,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "709513513",
+      "utm_medium": "goliath__interests",
+      "unique_leads": 0,
+      "visits": 18,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "709513517",
+      "utm_medium": "goliath__keys",
+      "unique_leads": 0,
+      "visits": 4,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-14",
+      "utm_medium": "goliath__auto",
+      "unique_leads": 0,
+      "visits": 1,
+      "goal_reaches": 0
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-9",
+      "utm_medium": "goliath__interests",
+      "unique_leads": 0,
+      "visits": 1,
+      "goal_reaches": 0
+    }
+  ],
+  "metrika_totals_mtd": {
+    "visits": 398,
+    "users": 342,
+    "unique_leads": 11
+  },
+  "viewers_yday": [
+    {
+      "utm_campaign": "n8n-web-1",
+      "utm_medium": "goliath__keys",
+      "viewers": 2
+    },
+    {
+      "utm_campaign": "claudecode-web-1",
+      "utm_medium": "goliath__keys",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "law-web-1",
+      "utm_medium": "goliath__interests",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-14",
+      "utm_medium": "goliath__auto",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-14",
+      "utm_medium": "goliath__interests",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-14",
+      "utm_medium": "goliath__keys",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-9",
+      "utm_medium": "goliath__interests",
+      "viewers": 1
+    }
+  ],
+  "payments_yday": [],
+  "viewers_mtd": [
+    {
+      "utm_campaign": "n8n-web-1",
+      "utm_medium": "goliath__keys",
+      "viewers": 2
+    },
+    {
+      "utm_campaign": "claudecode-web-1",
+      "utm_medium": "goliath__keys",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "law-web-1",
+      "utm_medium": "goliath__interests",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-14",
+      "utm_medium": "goliath__auto",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-14",
+      "utm_medium": "goliath__interests",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-14",
+      "utm_medium": "goliath__keys",
+      "viewers": 1
+    },
+    {
+      "utm_campaign": "prompt-engineer-web-9",
+      "utm_medium": "goliath__interests",
+      "viewers": 1
+    }
+  ],
+  "payments_mtd": [],
+  "agg_yday": {
+    "per_product": [
+      {
+        "product": "n8n",
+        "cost_rub": 2374.0,
+        "leads": 2,
+        "leads_yd": 0,
+        "cpa_rub": 1187.0
+      },
+      {
+        "product": "sysai",
+        "cost_rub": 1918.0,
+        "leads": 1,
+        "leads_yd": 0,
+        "cpa_rub": 1918.0
+      },
+      {
+        "product": "openclaw",
+        "cost_rub": 1680.0,
+        "leads": 1,
+        "leads_yd": 0,
+        "cpa_rub": 1680.0
+      },
+      {
+        "product": "law",
+        "cost_rub": 1439.0,
+        "leads": 2,
+        "leads_yd": 0,
+        "cpa_rub": 719.0
+      },
+      {
+        "product": "prompt-engineer-web-14",
+        "cost_rub": 0.0,
+        "leads": 0,
+        "leads_yd": 0,
+        "cpa_rub": 0
+      },
+      {
+        "product": "prompt-engineer-web-9",
+        "cost_rub": 0.0,
+        "leads": 0,
+        "leads_yd": 0,
+        "cpa_rub": 0
+      }
+    ],
+    "total": {
+      "product": "TOTAL",
+      "cost_rub": 7411.0,
+      "leads": 6,
+      "leads_yd": 0,
+      "cpa_rub": 1235.0
+    }
+  },
+  "agg_mtd": {
+    "per_product": [
+      {
+        "product": "n8n",
+        "cost_rub": 3746.0,
+        "clicks": 127,
+        "leads": 3,
+        "leads_yd": 0,
+        "viewers": 0,
+        "sales": 0,
+        "revenue_rub": 0.0,
+        "cpa_rub": 1249.0,
+        "roas_pct": 0.0
+      },
+      {
+        "product": "sysai",
+        "cost_rub": 3421.0,
+        "clicks": 97,
+        "leads": 1,
+        "leads_yd": 0,
+        "viewers": 0,
+        "sales": 0,
+        "revenue_rub": 0.0,
+        "cpa_rub": 3421.0,
+        "roas_pct": 0.0
+      },
+      {
+        "product": "openclaw",
+        "cost_rub": 3237.0,
+        "clicks": 114,
+        "leads": 3,
+        "leads_yd": 0,
+        "viewers": 0,
+        "sales": 0,
+        "revenue_rub": 0.0,
+        "cpa_rub": 1079.0,
+        "roas_pct": 0.0
+      },
+      {
+        "product": "law",
+        "cost_rub": 2619.0,
+        "clicks": 53,
+        "leads": 4,
+        "leads_yd": 0,
+        "viewers": 0,
+        "sales": 0,
+        "revenue_rub": 0.0,
+        "cpa_rub": 655.0,
+        "roas_pct": 0.0
+      },
+      {
+        "product": "prompt-engineer-web-14",
+        "cost_rub": 0.0,
+        "clicks": 0,
+        "leads": 0,
+        "leads_yd": 0,
+        "viewers": 3,
+        "sales": 0,
+        "revenue_rub": 0.0,
+        "cpa_rub": 0,
+        "roas_pct": 0
+      },
+      {
+        "product": "prompt-engineer-web-9",
+        "cost_rub": 0.0,
+        "clicks": 0,
+        "leads": 0,
+        "leads_yd": 0,
+        "viewers": 1,
+        "sales": 0,
+        "revenue_rub": 0.0,
+        "cpa_rub": 0,
+        "roas_pct": 0
+      },
+      {
+        "product": "n8n-web-1",
+        "cost_rub": 0.0,
+        "clicks": 0,
+        "leads": 0,
+        "leads_yd": 0,
+        "viewers": 2,
+        "sales": 0,
+        "revenue_rub": 0.0,
+        "cpa_rub": 0,
+        "roas_pct": 0
+      },
+      {
+        "product": "claudecode-web-1",
+        "cost_rub": 0.0,
+        "clicks": 0,
+        "leads": 0,
+        "leads_yd": 0,
+        "viewers": 1,
+        "sales": 0,
+        "revenue_rub": 0.0,
+        "cpa_rub": 0,
+        "roas_pct": 0
+      },
+      {
+        "product": "law-web-1",
+        "cost_rub": 0.0,
+        "clicks": 0,
+        "leads": 0,
+        "leads_yd": 0,
+        "viewers": 1,
+        "sales": 0,
+        "revenue_rub": 0.0,
+        "cpa_rub": 0,
+        "roas_pct": 0
+      }
+    ],
+    "total": {
+      "product": "TOTAL",
+      "cost_rub": 13023.0,
+      "clicks": 391,
+      "leads": 11,
+      "leads_yd": 0,
+      "viewers": 8,
+      "sales": 0,
+      "revenue_rub": 0.0,
+      "cpa_rub": 1184.0,
+      "roas_pct": 0.0
+    }
+  }
+}
