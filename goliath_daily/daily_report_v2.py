@@ -60,6 +60,9 @@ PG_USER = os.environ.get("PG_USER", "kurzemnek_app")
 PG_PASSWORD = os.environ.get("PG_PASSWORD", os.environ.get("DATABASE_PASSWORD", ""))
 PG_DB = os.environ.get("PG_DB", "kurzemnek")
 
+# Если PG_PASSWORD пуст — Postgres-write пропускаем (best-effort)
+ENABLE_PG_WRITE = bool(PG_PASSWORD)
+
 PRODUCTS = ["sysai", "openclaw", "n8n", "law"]
 TARGET_CPL = {"sysai": 1077, "openclaw": 1308, "n8n": 1231, "law": 846}
 ARPL = {"sysai": 1400, "openclaw": 1700, "n8n": 1600, "law": 1100}
@@ -286,18 +289,24 @@ def fetch_payments(date_from, date_to):
 # ─────────────────────── Postgres snapshot ───────────────────────
 
 def write_snapshot(snapshot_date, products):
+    """Best-effort. Любая ошибка не должна ломать ТГ-отправку."""
     try:
         import psycopg2
         from psycopg2.extras import Json
-    except ImportError:
-        print("WARN: psycopg2 not installed — snapshot не записан")
+    except Exception as e:
+        print(f"WARN: psycopg2 import failed ({e}) — snapshot пропущен")
         return False
 
-    conn = psycopg2.connect(
-        host=PG_HOST, port=PG_PORT, user=PG_USER, password=PG_PASSWORD,
-        dbname=PG_DB, sslmode="require", connect_timeout=15,
-    )
-    conn.autocommit = True
+    try:
+        conn = psycopg2.connect(
+            host=PG_HOST, port=PG_PORT, user=PG_USER, password=PG_PASSWORD,
+            dbname=PG_DB, sslmode="require", connect_timeout=15,
+        )
+        conn.autocommit = True
+    except Exception as e:
+        print(f"WARN: psycopg2 connect failed ({e}) — snapshot пропущен")
+        return False
+
     try:
         with conn.cursor() as cur:
             cur.execute("SET search_path TO goliath, public")
@@ -322,8 +331,12 @@ def write_snapshot(snapshot_date, products):
                     Json(d.get("raw", {})),
                 ))
         return True
+    except Exception as e:
+        print(f"WARN: snapshot insert failed ({e}) — продолжаем без БД")
+        return False
     finally:
-        conn.close()
+        try: conn.close()
+        except Exception: pass
 
 
 # ─────────────────────── Агрегация ───────────────────────
@@ -569,9 +582,15 @@ def main():
 
     states = get_states()
 
-    print("[8/8] Запись snapshot в YC Postgres...")
-    ok = write_snapshot(yday_s, products_mtd)
-    print(f"    snapshot saved: {ok}")
+    if ENABLE_PG_WRITE:
+        print("[8/8] Запись snapshot в YC Postgres...")
+        try:
+            ok = write_snapshot(yday_s, products_mtd)
+            print(f"    snapshot saved: {ok}")
+        except Exception as e:
+            print(f"    snapshot WARN: {e} — продолжаем")
+    else:
+        print("[8/8] Postgres-write пропущен (PG_PASSWORD пуст)")
 
     html = build_html(yday_s, products_yday, products_mtd, mtd_from_s, states)
     print("\n=== HTML отчёт ===")
