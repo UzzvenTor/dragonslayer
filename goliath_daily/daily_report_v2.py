@@ -42,9 +42,11 @@ except ImportError:
 # ── env
 TG_BOT_TOKEN = os.environ["TG_BOT_TOKEN"]
 TG_CHAT_ID = os.environ["TG_CHAT_ID"]
-YD_TOKEN = os.environ["YANDEX_DIRECT_TOKEN"].strip().strip("'").strip('"')
-YD_CABINET = os.environ["YD_CABINET"]
+# YD-режим: API напрямую (если токен whitelisted) или чтение из Postgres (cloud-режим)
+YD_TOKEN = (os.environ.get("YANDEX_DIRECT_TOKEN") or "").strip().strip("'").strip('"')
+YD_CABINET = os.environ.get("YD_CABINET", "porg-6vgf2ozq")
 YD_CAMPAIGN_IDS = [int(x) for x in os.environ["YD_CAMPAIGN_IDS"].split(",")]
+YD_FROM_PG = os.environ.get("YD_FROM_PG", "0").lower() in ("1", "true", "yes") or not YD_TOKEN
 METRIKA_TOKEN = os.environ["YANDEX_METRIKA_TOKEN"]
 METRIKA_COUNTER = os.environ["METRIKA_COUNTER_ID"]
 GOAL_REG_ID = os.environ["GOAL_REG_ID"]
@@ -144,6 +146,55 @@ def yd_pull(date_from, date_to):
             "conversions": int(row.get("Conversions") or 0),
         })
     return rows
+
+
+# ─────────────────── YD из Postgres (гибрид-режим) ───────────────────
+
+def yd_from_pg(date_from, date_to):
+    """Читает последний pull для (date_from, date_to) из goliath.yd_raw_pulls.
+
+    Возвращает rows того же формата что yd_pull. Если pull'а нет — возвращает [].
+    """
+    import psycopg2
+    conn = psycopg2.connect(
+        host=PG_HOST, port=PG_PORT, user=PG_USER, password=PG_PASSWORD,
+        dbname=PG_DB, sslmode="require", connect_timeout=15,
+    )
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SET search_path TO goliath, public")
+            cur.execute("""
+                SELECT campaign_id, campaign_name, cost_rub, clicks, impressions, conversions
+                FROM v_yd_latest_pull
+                WHERE date_from = %s AND date_to = %s
+                ORDER BY campaign_id
+            """, (date_from, date_to))
+            return [{
+                "campaign_id": r[0], "campaign_name": r[1],
+                "cost_rub": float(r[2] or 0), "clicks": int(r[3] or 0),
+                "impressions": int(r[4] or 0), "conversions": int(r[5] or 0),
+            } for r in cur.fetchall()]
+    finally:
+        conn.close()
+
+
+def yd_last_pull_at(date_from, date_to):
+    """Когда был последний pull для пары (date_from, date_to)."""
+    import psycopg2
+    conn = psycopg2.connect(
+        host=PG_HOST, port=PG_PORT, user=PG_USER, password=PG_PASSWORD,
+        dbname=PG_DB, sslmode="require", connect_timeout=15,
+    )
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SET search_path TO goliath, public")
+            cur.execute("""
+                SELECT MAX(pulled_at) FROM yd_raw_pulls
+                WHERE date_from = %s AND date_to = %s
+            """, (date_from, date_to))
+            return cur.fetchone()[0]
+    finally:
+        conn.close()
 
 
 # ────────────────────────── Метрика ──────────────────────────
@@ -507,7 +558,9 @@ def send_tg(html):
 
 
 def get_states():
-    """Pull текущих state per кампания через campaigns/get."""
+    """Pull текущих state per кампания через campaigns/get. Не работает в YD_FROM_PG режиме."""
+    if YD_FROM_PG or not YD_TOKEN:
+        return {}
     body = {
         "method": "get",
         "params": {
@@ -553,12 +606,32 @@ def main():
     yday_s = yday.isoformat()
     mtd_from_s = mtd_from.isoformat()
 
-    print(f"=== Голиаф v2 · {yday_s} ===\n")
+    print(f"=== Голиаф v2 · {yday_s} ===")
+    print(f"YD source: {'Postgres (гибрид)' if YD_FROM_PG else 'API (direct)'}\n")
 
-    print("[1/8] YD за вчера...")
-    yd_yday = yd_pull(yday_s, yday_s)
-    print("[2/8] YD за MTD...")
-    yd_mtd = yd_pull(mtd_from_s, yday_s)
+    yd_warning = None
+    if YD_FROM_PG:
+        print("[1/8] YD за вчера (из Postgres)...")
+        yd_yday = yd_from_pg(yday_s, yday_s)
+        print("[2/8] YD за MTD (из Postgres)...")
+        yd_mtd = yd_from_pg(mtd_from_s, yday_s)
+        # Проверка свежести
+        last = yd_last_pull_at(yday_s, yday_s)
+        if last is None:
+            yd_warning = f"⚠️ YD-snapshot за {yday_s} не найден в БД — локальный pull не запускался"
+        else:
+            now = datetime.datetime.now(last.tzinfo) if last.tzinfo else datetime.datetime.now()
+            age_h = (now - last).total_seconds() / 3600
+            if age_h > 36:
+                yd_warning = f"⚠️ YD данные устарели ({age_h:.0f}ч назад). Запусти `yd_pull_local.py` на ноуте."
+            else:
+                print(f"    YD данные свежие (последний pull {age_h:.1f}ч назад)")
+        if yd_warning: print(f"    {yd_warning}")
+    else:
+        print("[1/8] YD за вчера (API)...")
+        yd_yday = yd_pull(yday_s, yday_s)
+        print("[2/8] YD за MTD (API)...")
+        yd_mtd = yd_pull(mtd_from_s, yday_s)
     print("[3/8] Метрика за вчера + MTD...")
     metrika_yday = metrika_pull(yday_s, yday_s)
     metrika_mtd = metrika_pull(mtd_from_s, yday_s)
@@ -593,6 +666,8 @@ def main():
         print("[8/8] Postgres-write пропущен (PG_PASSWORD пуст)")
 
     html = build_html(yday_s, products_yday, products_mtd, mtd_from_s, states)
+    if yd_warning:
+        html += f"\n\n<i>{yd_warning}</i>"
     print("\n=== HTML отчёт ===")
     print(html.replace("<b>", "").replace("</b>", "").replace("<pre>", "").replace("</pre>", "")
               .replace("<i>", "").replace("</i>", "").replace("<code>", "").replace("</code>", ""))
