@@ -1,11 +1,12 @@
-name: Goliath Daily Report
+name: Goliath Daily Report (v1 — DISABLED 2026-05-07)
 
+# ⚠️ CRON ВЫКЛЮЧЕН 2026-05-07 — переход на v2 (Anthropic Cloud Routine).
+# Главный entrypoint v2: Zerocoder/agents/goliath/routines/daily-prompt.md
+# При необходимости backfill v1 — запустить вручную через workflow_dispatch.
 on:
-  schedule:
-    # 4:00 UTC = 7:00 МСК. GH Actions cron под нагрузкой опаздывает до 60 мин,
-    # этот сдвиг даёт час буфера, чтобы отчёт реально был у Валерия к 8:00 МСК.
-    - cron: '0 4 * * *'
-  workflow_dispatch:  # ручной запуск из UI Actions
+  # schedule:
+  #   - cron: '0 4 * * *'   # UTC 04:00 = 07:00 МСК — отключено
+  workflow_dispatch:  # ручной запуск из UI Actions (для backfill/cross-check)
 
 permissions:
   contents: write  # коммитим отчёт обратно в репо
